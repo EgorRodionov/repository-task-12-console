@@ -1,0 +1,159 @@
+using System;
+using System.Text;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace Zadanie_12_
+{
+    class Program
+    {
+        class String
+        {
+            private StringBuilder Line;
+            private int n;
+
+            public String(string str)
+            {
+                Line = new StringBuilder(str);
+                n = str.Length;
+            }
+            public int CountSpaces()
+            {
+                int count = 0;
+                for (int i = 0; i < Line.Length; i++)
+                {
+                    if (Line[i] == ' ')
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+            public string replacing_characters(string str)
+            {
+                Regex pattern = new Regex(@"(?!^)(?=[A-Z])");
+
+                return pattern.Replace(str, "_").ToLower();
+            }
+            public string remove_punctuation(string str)
+            {
+                str = Line.ToString();
+                Line.Clear();
+                Line.Append(Regex.Replace(str, "[,.:?!]", ""));
+                n = Line.Length;
+                return Line.ToString();
+            }
+            public int Length
+            {
+                get
+                {
+                    return n;
+                }
+            }
+
+            //индексатор позволяющий по индексу обращаться к соответствующему символу строки.
+            public char this[int index]
+            {
+                get
+                {
+                    return Line[index];
+                }
+            }
+
+            //Перегрузка операции унарного (+): преобразующей строку к строчным символам;
+            public static string operator +(String st)
+            {
+                return st.Line.ToString().ToLower();
+            }
+
+            //Операция унарного -: преобразующей строку к прописным символам;
+            public static string operator -(String st)
+            {
+                return st.Line.ToString().ToUpper();
+            }
+
+            //Констант true и false: обращение к экземпляру класса дает значение true, если строка не пустая, иначе false.
+
+
+            //Перегрузка констант (true)
+            public static bool operator true(String  st)
+            {
+                if (st.Length > 0)
+                    return true;
+                else
+                    return false;
+            }
+
+            //Перегрузка констант (false)
+            public static bool operator false(String  st)
+            {
+                if (st.Length == 0)
+                    return true;
+                else
+                    return false;
+            }
+
+            //Перегрузка операции (&): возвращает значение true, если строковые поля двух объектов посимвольно равны (без учета регистра), иначе false;
+            public static bool operator &(String st1, String st2)
+            {
+                return st1.Line.ToString().ToUpper().Equals(st2.Line.ToString().ToUpper());
+            }
+
+            //Преобразования класса-строка в тип string.
+            public static explicit operator String(string str)
+            {
+                return new String(str);
+            }
+            //Преобразования типа string в класс-строка.
+            public static explicit operator string(String st)
+            {
+                return st.Line.ToString();
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            try
+            {
+                Console.WriteLine("Введите эту строку:");
+                string str = Console.ReadLine();
+
+                String st = new String(str);
+
+                Console.WriteLine();
+                Console.WriteLine("Исходная строка: {0} Длина: {1}", str, st.Length);
+                Console.WriteLine("\r\n| Подсчитывает количество пробелов в строке.");
+                Console.WriteLine("Количество пробелов в строке: {0}", st.CountSpaces() + "\r\n");
+                Console.WriteLine("| Заменяет в строке все прописные символы на строчные.");
+                Console.WriteLine("Измененная строка: {0}", st.replacing_characters(str) + "\r\n"); //заменяет в строке все прописные символы на строчные;
+                Console.WriteLine("| Удаляет из строки все знаки препинания.");
+                Console.WriteLine("Исходная строка: {0}, Строка без знаков препинания: {1} Длина: {2}", str, st.remove_punctuation(str), st.Length);
+
+                Console.WriteLine("\r\nВведите индекс, чтобы обратиться к соответствующему символу строки:");
+                int index = int.Parse(Console.ReadLine());
+                if (index < str.Length)
+                {
+                    Console.WriteLine("В строке \"{0}\", Вы обратились к символу: \"{1}\"", str, st[index]);
+                }
+                else
+                    Console.WriteLine("Ошибка! Индекс не может быть больше строки");
+                Console.WriteLine("\r\nПреобразование строки к строчным символам:  {0}", +st);
+                Console.WriteLine("Преобразование строки к прописным символам:  {0}", -st);
+
+                if (st)
+                    Console.WriteLine("Строка не пустая.");
+                else
+                    Console.WriteLine("Строка пустая.");
+
+                Console.WriteLine("Введите вторую строку:");
+                str = Console.ReadLine();
+                String st2 = new String(str);
+                Console.WriteLine("Равны ли строки? {0}", st & st2);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Ошибка! Неверный формат.");
+            }
+        }
+    }
+}
